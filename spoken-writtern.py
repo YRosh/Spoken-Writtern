@@ -53,64 +53,55 @@ def check_front_last(word):
             front=word[0]
             word=word[1:]
     return front,word,last
+        
+def get_user_input():
+
+    paragraph=input("Enter Your paragraph of spoken english:\n\t")
+
+    if not paragraph:
+        raise ValueError("[Error]: You entered nothing.")
+    return paragraph
 
 
-class SpokenToWritten:
+def Convert(paragraph):
+    words_of_para=paragraph.split()
+    
+    rules = get_rules()
+    numbers=rules['Numbers']
+    tuples=rules['Tuples']
+    general=rules['General']
+    
+    output_para = ""
+    
+    i=0
+    no_of_words=len(words_of_para) 
+    while i<no_of_words: 
+        
+        front,word,last=check_front_last(words_of_para[i])
+        if i+1!= no_of_words:
+            front_n,next_word,last_n=check_front_last(words_of_para[i+1])
+            if word.lower() in numbers.keys() and (next_word.lower()=='dollars' or next_word.lower()=='dollar'):
+                output_para+=" "+front+"$"+str(numbers[word.lower()])+last
+                i=i+2
 
-    def __init__(self):
-
-        self.rules=get_rules()
-        self.paragraph=""
-        self.ouptut_para=""
-
-    def get_user_input(self):
-
-        self.paragraph=input("\n[IN]:Enter Your paragraph of spoken english:\n\t")
-
-        if not self.paragraph:
-            raise ValueError("[Error]: You entered nothing.")
-
-    def show_output(self):
-        print("\nConverted Written English Paragraph: \n\n \"" +self.ouptut_para+"\"")
-
-    def Convert(self):
-        words_of_para=self.paragraph.split()
-        numbers=self.rules['Numbers']
-        tuples=self.rules['Tuples']
-        general=self.rules['General']
-        i=0
-        no_of_words=len(words_of_para) 
-        while i<no_of_words: 
-            
-            front,word,last=check_front_last(words_of_para[i])
-            if i+1!= no_of_words:
-                front_n,next_word,last_n=check_front_last(words_of_para[i+1])
-                if word.lower() in numbers.keys() and (next_word.lower()=='dollars' or next_word.lower()=='dollar'):
-                    self.ouptut_para=self.ouptut_para+" "+front+"$"+str(numbers[word.lower()])+last
-                    i=i+2
-
-                elif word.lower() in tuples.keys() and len(next_word)==1:
-                    self.ouptut_para=self.ouptut_para+" "+front_n+(next_word*tuples[word.lower()])+last_n
-                    i=i+2
-                elif (word+" "+next_word) in general.keys():
-                    self.ouptut_para=self.ouptut_para+" "+front+word+next_word+last_n
-                    i=i+2
-                else:
-                    self.ouptut_para=self.ouptut_para+" "+words_of_para[i]
-                    i=i+1
+            elif word.lower() in tuples.keys() and len(next_word)==1:
+                output_para += " "+front_n+(next_word*tuples[word.lower()])+last_n
+                i=i+2
+            elif (word+" "+next_word) in general.keys():
+                output_para+=" "+front+word+next_word+last_n
+                i=i+2
             else:
-                self.ouptut_para=self.ouptut_para+" "+words_of_para[i]
+                output_para+=" "+words_of_para[i]
                 i=i+1
+        else:
+            output_para+=" "+words_of_para[i]
+            i=i+1
+    return output_para
 
-
-#main function 
 def convert_sp_to_wr():
-    obj_spoken=SpokenToWritten()
-    obj_spoken.get_user_input()
-    obj_spoken.Convert()
-
-
-    obj_spoken.show_output()
+    para = get_user_input()
+    para = Convert(para)
+    print("\nConverted Written English Paragraph: \n\n \"" +para+"\"")
 
 if __name__ == "__main__":
     convert_sp_to_wr()
